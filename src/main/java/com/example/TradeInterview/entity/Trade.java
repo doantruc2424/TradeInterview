@@ -21,7 +21,6 @@ public class Trade {
     @Id
     private Long userAsk;
     private String pair;
-    private Long userMaker;
     private BigDecimal price;
     private BigDecimal amount;
     private Long createdAt;
@@ -30,11 +29,10 @@ public class Trade {
 
     }
 
-    public Trade(Long userBid, Long userAsk, String pair, Long userMaker, BigDecimal price, BigDecimal amount, Long createdAt) {
+    public Trade(Long userBid, Long userAsk, String pair, BigDecimal price, BigDecimal amount, Long createdAt) {
         this.userBid = userBid;
         this.userAsk = userAsk;
         this.pair = pair;
-        this.userMaker = userMaker;
         this.price = price;
         this.amount = amount;
         this.createdAt = createdAt;

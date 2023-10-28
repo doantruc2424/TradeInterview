@@ -19,6 +19,10 @@ public class Order {
     private Boolean isBid;
     private BigDecimal price;
     private BigDecimal amount;
+
+    private String status;
+
+    private BigDecimal remain;
     private Long createdAt;
     private Long updatedAt;
 
