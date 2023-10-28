@@ -16,6 +16,6 @@ public interface ReferencePriceRepository extends JpaRepository<ReferencePrice, 
             + "FROM ReferencePrice t where t.pair = :pair ORDER BY t.updatedAt DESC")
     List<ReferencePrice> findByPairOrderByUpdatedAt(@Param("pair") String Pair);
     @Query("SELECT t.pair, t.source, t.bidPrice, t.askPrice, t.updatedAt "
-            + "FROM ReferencePrice t where ORDER BY t.pair, t.updatedAt DESC")
+            + "FROM ReferencePrice t ORDER BY t.pair, t.updatedAt DESC")
     List<ReferencePrice> findAllOrderByPairVsUpdatedAt();
 }

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 public class MatchingEngine {
@@ -17,9 +18,21 @@ public class MatchingEngine {
 
     @Autowired
     TradeRepository tradeRepository;
-
     @Autowired
     OrderRepository orderRepository;
+
+    public MatchingEngine(TradeRepository tradeRepository, OrderRepository orderRepository, String pair) {
+        this.tradeRepository = tradeRepository;
+        this.orderRepository = orderRepository;
+        loadData(pair);
+    }
+
+    private void loadData(String pair) {
+        List<Order> orders = orderRepository.findByPairOrderByUpdatedAt(pair);
+        for (Order order : orders) {
+            addOrderToBucket(order);
+        }
+    }
 
     public synchronized void matchingOrder(Order newOrder) {
         newOrder.setCreatedAt(System.currentTimeMillis());
@@ -117,7 +130,6 @@ public class MatchingEngine {
         tradeRepository.save(new Trade(newOrder.getIsBid() ? newOrder.getUserId() : makerOrder.getUserId(),
                 newOrder.getIsBid() ? makerOrder.getUserId() : newOrder.getUserId(), makerOrder.getPair(),
                 makerOrder.getPrice(), amount, newOrder.getCreatedAt()));
-
     }
 
     private BigDecimal tryMatchingAsk(Order newOrder) {

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/v1/external_price")
+@RequestMapping(path = "/api/v1/ref_price")
 public class PriceAggregationController {
 
     @Autowired
