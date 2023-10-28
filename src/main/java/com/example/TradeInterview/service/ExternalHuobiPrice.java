@@ -34,7 +34,7 @@ public class ExternalHuobiPrice implements ExternalMarketPrice {
     ReferencePriceRepository referencePriceRepository;
 
     @Override
-    public void updateExternalPrice(String source, String url, HashSet<String> pairs) {
+    public void updateExternalPrice(String source, String url, HashSet<String> pairs, Long updateTime) {
         logger.info("start check price" + Thread.currentThread().getName());
         try {
             String result = makeAPICall(url);
@@ -55,7 +55,7 @@ public class ExternalHuobiPrice implements ExternalMarketPrice {
                     }
                     referencePrice.setBidPrice(new BigDecimal(sticker.getBid()));
                     referencePrice.setAskPrice(new BigDecimal(sticker.getAsk()));
-                    referencePrice.setUpdatedAt(System.currentTimeMillis());
+                    referencePrice.setUpdatedAt(updateTime);
                     referencePriceRepository.save(referencePrice);
                     pairs.remove(symbol);
                     if (pairs.isEmpty()) {

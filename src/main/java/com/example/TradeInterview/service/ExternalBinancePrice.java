@@ -31,7 +31,7 @@ public class ExternalBinancePrice implements ExternalMarketPrice {
     ReferencePriceRepository referencePriceRepository;
 
     @Override
-    public void updateExternalPrice(String source, String url, HashSet<String> pairs) {
+    public void updateExternalPrice(String source, String url, HashSet<String> pairs, Long updateTime) {
         logger.info("start check price" + Thread.currentThread().getName());
 
         try {
@@ -51,7 +51,7 @@ public class ExternalBinancePrice implements ExternalMarketPrice {
                     }
                     referencePrice.setBidPrice(new BigDecimal(sticker.getBidPrice()));
                     referencePrice.setAskPrice(new BigDecimal(sticker.getAskPrice()));
-                    referencePrice.setUpdatedAt(System.currentTimeMillis());
+                    referencePrice.setUpdatedAt(updateTime);
                     referencePriceRepository.save(referencePrice);
                     pairs.remove(symbol);
                     if (pairs.isEmpty()) {

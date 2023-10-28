@@ -34,6 +34,7 @@ public class UpdatePriceExternalJob {
         logger.info("start update external price");
         if(jobTurnOn) {
             String[] sources = url.split(" ");
+            Long updateTime = System.currentTimeMillis();
             for (String source : sources) {
                 String[] sourceInfo = source.split("-");
                 ExternalMarketPrice priceService = pickExternalService(sourceInfo[0]);
@@ -42,7 +43,7 @@ public class UpdatePriceExternalJob {
                     pairs.add(pair);
                 }
                 new Thread(() -> {
-                    priceService.updateExternalPrice(sourceInfo[0], sourceInfo[1], pairs);
+                    priceService.updateExternalPrice(sourceInfo[0], sourceInfo[1], pairs, updateTime);
                 }).start();
             }
         }
