@@ -1,9 +1,11 @@
 package com.example.TradeInterview.cronjob;
 
+import com.example.TradeInterview.service.ExternalBinancePrice;
+import com.example.TradeInterview.service.ExternalHuobiPrice;
 import com.example.TradeInterview.service.ExternalMarketPrice;
-import com.example.TradeInterview.service.ExternalPriceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -22,7 +24,10 @@ public class UpdatePriceExternalJob {
     private String url;
     @Value("${update.price.external.turn.on}")
     private boolean jobTurnOn;
-
+    @Autowired
+    private ExternalHuobiPrice huobiPrice;
+    @Autowired
+    private ExternalBinancePrice binancePrice;
 
     @Scheduled(fixedDelay = 10000)
     public void scheduleFixedDelayTask() {
@@ -31,8 +36,7 @@ public class UpdatePriceExternalJob {
             String[] sources = url.split(" ");
             for (String source : sources) {
                 String[] sourceInfo = source.split("-");
-                ExternalMarketPrice priceService = new ExternalPriceService(sourceInfo[0]);
-
+                ExternalMarketPrice priceService = pickExternalService(sourceInfo[0]);
                 HashSet<String> pairs = new HashSet<String>();
                 for (String pair: sourceInfo[2].split(",")) {
                     pairs.add(pair);
@@ -41,6 +45,16 @@ public class UpdatePriceExternalJob {
                     priceService.updateExternalPrice(sourceInfo[0], sourceInfo[1], pairs);
                 }).start();
             }
+        }
+    }
+    private  ExternalMarketPrice pickExternalService(String source) {
+        if (source.equals("binance")) {
+            return binancePrice;
+        } else if(source.equals("huobi")) {
+            return huobiPrice;
+        } else {
+            logger.error("External Price source not support " + source);
+            return null;
         }
     }
 }

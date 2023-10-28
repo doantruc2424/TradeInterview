@@ -1,6 +1,7 @@
 package com.example.TradeInterview.service;
 
-import com.example.TradeInterview.dto.BinanceStickerDto;
+import com.example.TradeInterview.dto.HuobiReturnDataDto;
+import com.example.TradeInterview.dto.HuobiStickerDto;
 import com.example.TradeInterview.entity.ReferencePrice;
 import com.example.TradeInterview.entity.ReferencePriceId;
 import com.example.TradeInterview.repository.ReferencePriceRepository;
@@ -21,11 +22,13 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 @Service
-public class ExternalBinancePrice implements ExternalMarketPrice {
-    private static final Logger logger = LoggerFactory.getLogger(ExternalBinancePrice.class);
+public class ExternalHuobiPrice implements ExternalMarketPrice {
+    private static final Logger logger = LoggerFactory.getLogger(ExternalHuobiPrice.class);
 
     @Autowired
     ReferencePriceRepository referencePriceRepository;
@@ -33,12 +36,13 @@ public class ExternalBinancePrice implements ExternalMarketPrice {
     @Override
     public void updateExternalPrice(String source, String url, HashSet<String> pairs) {
         logger.info("start check price" + Thread.currentThread().getName());
-
         try {
             String result = makeAPICall(url);
             ObjectMapper mapper = new ObjectMapper();
-            List<BinanceStickerDto> stickers = Arrays.asList(mapper.readValue(result, BinanceStickerDto[].class));
-            for (BinanceStickerDto sticker : stickers) {
+            HuobiReturnDataDto HuobiData = mapper.readValue(result, HuobiReturnDataDto.class);
+
+            List<HuobiStickerDto> stickers = HuobiData.getData();
+            for (HuobiStickerDto sticker : stickers) {
                 String symbol = sticker.getSymbol();
                 if (pairs.contains(symbol)) {
                     ReferencePrice referencePrice;
@@ -49,8 +53,8 @@ public class ExternalBinancePrice implements ExternalMarketPrice {
                         referencePrice = new ReferencePrice(source, symbol);
 
                     }
-                    referencePrice.setBidPrice(new BigDecimal(sticker.getBidPrice()));
-                    referencePrice.setAskPrice(new BigDecimal(sticker.getAskPrice()));
+                    referencePrice.setBidPrice(new BigDecimal(sticker.getBid()));
+                    referencePrice.setAskPrice(new BigDecimal(sticker.getAsk()));
                     referencePrice.setUpdatedAt(System.currentTimeMillis());
                     referencePriceRepository.save(referencePrice);
                     pairs.remove(symbol);
