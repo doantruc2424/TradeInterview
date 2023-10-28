@@ -23,6 +23,11 @@ import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.util.*;
 
+/**
+ * 1. Price aggregation from the source below:
+ * Binance
+ * Url : https://api.binance.com/api/v3/ticker/bookTicker
+ */
 @Service
 public class ExternalBinancePrice implements ExternalMarketPrice {
     private static final Logger logger = LoggerFactory.getLogger(ExternalBinancePrice.class);

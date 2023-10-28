@@ -29,6 +29,10 @@ public class UpdatePriceExternalJob {
     @Autowired
     private ExternalBinancePrice binancePrice;
 
+    /**
+     * Task
+     * 1. Price aggregation from the source below:
+     */
     @Scheduled(fixedDelay = 10000)
     public void scheduleFixedDelayTask() {
         logger.info("start update external price");

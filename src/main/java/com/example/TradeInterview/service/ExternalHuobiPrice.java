@@ -26,6 +26,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * 1. Price aggregation from the source below:
+ * Houbi
+ * Url : https://api.huobi.pro/market/tickers
+ */
 @Service
 public class ExternalHuobiPrice implements ExternalMarketPrice {
     private static final Logger logger = LoggerFactory.getLogger(ExternalHuobiPrice.class);
