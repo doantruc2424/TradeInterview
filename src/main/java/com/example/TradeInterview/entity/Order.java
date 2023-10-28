@@ -17,7 +17,9 @@ public class Order {
     @Id
     private String pair;
     private Boolean isBid;
+    @Column(precision = 8)
     private BigDecimal price;
+    @Column(precision = 8)
     private BigDecimal amount;
 
     private String status;

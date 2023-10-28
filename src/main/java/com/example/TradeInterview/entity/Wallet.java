@@ -18,7 +18,7 @@ public class Wallet {
     @Id
     @Column(name = "currency", length = 10)
     private String currency;
-    @Column(name = "balance")
+    @Column(name = "balance", precision = 8)
     private BigDecimal balance;
 
     public Wallet() {

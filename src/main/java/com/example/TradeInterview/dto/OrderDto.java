@@ -1,5 +1,6 @@
 package com.example.TradeInterview.dto;
 
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class OrderDto {
+    @Id
     private Long userId;
     @NotEmpty(message = "pair is empty")
     @Max(value = 10)
@@ -22,23 +24,15 @@ public class OrderDto {
     @NotNull(message = "amount is null")
     private BigDecimal amount;
 
-    private String status;
-
-    private BigDecimal remain;
-    private Long createdAt;
-    private Long updatedAt;
-
     public OrderDto() {
 
     }
 
-    public OrderDto(Long userId, String pair, Boolean isBid, BigDecimal price, BigDecimal amount, Long createdAt, Long updatedAt) {
+    public OrderDto(Long userId, String pair, Boolean isBid, BigDecimal price, BigDecimal amount) {
         this.userId = userId;
         this.pair = pair;
         this.isBid = isBid;
         this.price = price;
         this.amount = amount;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }

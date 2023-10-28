@@ -1,5 +1,6 @@
 package com.example.TradeInterview.matchingCore;
 
+import com.example.TradeInterview.containt.OrderStatus;
 import com.example.TradeInterview.dto.BucketDto;
 import com.example.TradeInterview.entity.Order;
 import com.example.TradeInterview.entity.Trade;
@@ -37,6 +38,7 @@ public class MatchingEngine {
     public synchronized void matchingOrder(Order newOrder) {
         newOrder.setCreatedAt(System.currentTimeMillis());
         newOrder.setUpdatedAt(System.currentTimeMillis());
+        newOrder.setStatus(OrderStatus.IN_PROCESS.name());
         orderRepository.save(newOrder);
         BigDecimal remain;
         if (newOrder.getIsBid()) {
@@ -44,12 +46,17 @@ public class MatchingEngine {
         } else {
             remain = tryMatchingAsk(newOrder);
         }
-        if(remain.compareTo(BigDecimal.ZERO) > 0) {
+        if(remain.compareTo(BigDecimal.ZERO) == 0) {
             newOrder.setRemain(remain);
+            newOrder.setStatus(OrderStatus.FILLED.name());
             orderRepository.save(newOrder);
-            addOrderToBucket(newOrder);
+            return;
+        } if (remain.compareTo(newOrder.getRemain()) < 0) {
+            newOrder.setRemain(remain);
+            newOrder.setStatus(OrderStatus.PARTIALLY_FILLED.name());
+            orderRepository.save(newOrder);
         }
-
+        addOrderToBucket(newOrder);
     }
 
     private void addOrderToBucket(Order newOrder) {

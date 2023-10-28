@@ -1,10 +1,7 @@
 package com.example.TradeInterview.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -20,7 +17,9 @@ public class ReferencePrice {
     private String source;
     @Id
     private String pair;
+    @Column(precision = 8)
     private BigDecimal bidPrice;
+    @Column(precision = 8)
     private BigDecimal askPrice;
     private Long updatedAt;
 
