@@ -17,8 +17,10 @@ import java.math.BigDecimal;
 @Setter
 public class Trade {
     @Id
-    private Long userBid;
+    private Long orderBid;
     @Id
+    private Long orderAsk;
+    private Long userBid;
     private Long userAsk;
     private String pair;
     private BigDecimal price;
@@ -29,7 +31,9 @@ public class Trade {
 
     }
 
-    public Trade(Long userBid, Long userAsk, String pair, BigDecimal price, BigDecimal amount, Long createdAt) {
+    public Trade(Long orderBid, Long orderAsk, Long userBid, Long userAsk, String pair, BigDecimal price, BigDecimal amount, Long createdAt) {
+        this.orderBid = orderBid;
+        this.orderAsk = orderAsk;
         this.userBid = userBid;
         this.userAsk = userAsk;
         this.pair = pair;

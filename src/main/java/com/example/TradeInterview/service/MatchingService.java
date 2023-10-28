@@ -48,12 +48,13 @@ public class MatchingService {
 
     Map<String, MatchingEngine> matchingEngineMap = new HashMap<>();
     Map<String, PairDto> currenciesMap = new HashMap<>();
+
+    public MatchingService() {
+    }
     public void createOrder(OrderDto orderDto) {
-        MatchingEngine engine = matchingEngineMap.get(orderDto.getPair());
-        if (engine == null) {
-            engine = new MatchingEngine(tradeRepository, orderRepository, orderDto.getPair());
-        }
+        MatchingEngine engine = getMatchingEngines().get(orderDto.getPair());
         Order order = modelMapper.map(orderDto, Order.class);
+        order.setRemain(order.getAmount());
         engine.matchingOrder(order);
     }
 
@@ -83,7 +84,7 @@ public class MatchingService {
     }
 
     private String getCurrency(Boolean isBid, String pair) {
-        PairDto currencyDto = currenciesMap.get(pair);
+        PairDto currencyDto = getCurrenciesMap().get(pair);
         if(isBid) {
             return currencyDto.getQuote();
         } else {
@@ -91,15 +92,29 @@ public class MatchingService {
         }
     }
 
-    private void init() {
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            List<PairDto> pairs = Arrays.asList(mapper.readValue(currenciesInfo, PairDto[].class));
-            for (PairDto dto : pairs) {
-                currenciesMap.put(dto.getSymbol(), dto);
+    private Map<String, PairDto> getCurrenciesMap() {
+        if (currenciesMap.isEmpty()) {
+            try {
+                ObjectMapper mapper = new ObjectMapper();
+                List<PairDto> pairs = Arrays.asList(mapper.readValue(currenciesInfo, PairDto[].class));
+                for (PairDto dto : pairs) {
+                    currenciesMap.put(dto.getSymbol(), dto);
+                }
+            } catch (Exception e) {
+                logger.error("cannot parse currencies.info", e.toString());
             }
-        } catch (Exception e) {
-            logger.error("cannot parse currencies.info");
         }
+        return currenciesMap;
+    }
+
+    private Map<String, MatchingEngine> getMatchingEngines() {
+        if (matchingEngineMap.isEmpty()) {
+            Map<String, PairDto> currenciesMap = getCurrenciesMap();
+            for(String pair : currenciesMap.keySet()) {
+                MatchingEngine engine = new MatchingEngine(tradeRepository, orderRepository, pair);
+                matchingEngineMap.put(pair, engine);
+            }
+        }
+        return matchingEngineMap;
     }
 }

@@ -8,13 +8,13 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "trade_order")
-@IdClass(OrderId.class)
 @Getter
 @Setter
 public class Order {
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
+    private Long id;
     private Long userId;
-    @Id
     private String pair;
     private Boolean isBid;
     @Column(precision = 8)

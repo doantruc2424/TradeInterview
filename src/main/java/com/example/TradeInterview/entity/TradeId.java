@@ -10,16 +10,16 @@ import java.io.Serializable;
 @Getter
 @Setter
 public class TradeId implements Serializable {
-    private Long userBid;
+    private Long orderBid;
 
-    private Long userAsk;
+    private Long orderAsk;
 
     public TradeId() {
 
     }
 
-    public TradeId(Long userBid, Long userAsk) {
-        this.userBid = userBid;
-        this.userAsk = userAsk;
+    public TradeId(Long orderBid, Long orderAsk) {
+        this.orderBid = orderBid;
+        this.orderAsk = orderAsk;
     }
 }

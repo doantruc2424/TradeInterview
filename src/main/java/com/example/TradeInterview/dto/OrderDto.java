@@ -2,6 +2,7 @@ package com.example.TradeInterview.dto;
 
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -15,7 +16,6 @@ public class OrderDto {
     @Id
     private Long userId;
     @NotEmpty(message = "pair is empty")
-    @Max(value = 10)
     private String pair;
     @NotNull(message = "isBid is null")
     private Boolean isBid;

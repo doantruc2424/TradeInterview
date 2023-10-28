@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.Queue;
 
 public class MatchingEngine {
-    BucketDto bidBestPrice = new BucketDto();
-    BucketDto askBestPrice = new BucketDto();
+    BucketDto bidBestPrice;
+    BucketDto askBestPrice;
 
     @Autowired
     TradeRepository tradeRepository;
@@ -70,7 +70,7 @@ public class MatchingEngine {
                 return;
             }
             prevBucket = bidBestPrice;
-            while (newOrder.getPrice().compareTo(prevBucket.getPrice()) < 0) {
+            while (prevBucket!= null && newOrder.getPrice().compareTo(prevBucket.getPrice()) < 0) {
                 nextBucket = prevBucket;
                 prevBucket = prevBucket.getPrevBucket();
             }
@@ -97,7 +97,13 @@ public class MatchingEngine {
         if(existedBucket == null) {
             Queue<Order> orders = new LinkedList<>();
             orders.add(newOrder);
-            new BucketDto(newOrder.getPrice(), orders, nextBucket, prevBucket);
+            BucketDto newBucket = new BucketDto(newOrder.getPrice(), orders, nextBucket, prevBucket);
+            if (nextBucket != null) {
+                nextBucket.setPrevBucket(newBucket);
+            }
+            if (prevBucket != null) {
+                prevBucket.setNextBucket(newBucket);
+            }
         } else {
             existedBucket.getOrders().add(newOrder);
         }
@@ -134,9 +140,12 @@ public class MatchingEngine {
     }
 
     private void saveTrade(Order newOrder, Order makerOrder, BigDecimal amount) {
-        tradeRepository.save(new Trade(newOrder.getIsBid() ? newOrder.getUserId() : makerOrder.getUserId(),
-                newOrder.getIsBid() ? makerOrder.getUserId() : newOrder.getUserId(), makerOrder.getPair(),
-                makerOrder.getPrice(), amount, newOrder.getCreatedAt()));
+        tradeRepository.save(new Trade(
+                newOrder.getIsBid() ? newOrder.getId() : makerOrder.getId(),
+                newOrder.getIsBid() ? makerOrder.getId() : newOrder.getId(),
+                newOrder.getIsBid() ? newOrder.getUserId() : makerOrder.getUserId(),
+                newOrder.getIsBid() ? makerOrder.getUserId() : newOrder.getUserId(),
+                makerOrder.getPair(), makerOrder.getPrice(), amount, newOrder.getCreatedAt()));
     }
 
     private BigDecimal tryMatchingAsk(Order newOrder) {

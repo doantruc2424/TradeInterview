@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, OrderId> {
+public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT t.userId, t.pair, t.isBid, t.price, t.amount, t.createdAt, t.updatedAt FROM Order t where t.pair = :pair ORDER BY t.createdAt ASC")
     List<Order> findByPairOrderByUpdatedAt(@Param("pair") String Pair);
 }

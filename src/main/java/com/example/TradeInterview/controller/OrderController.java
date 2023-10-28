@@ -17,8 +17,7 @@ public class OrderController {
     MatchingService matchingService;
 
     @PostMapping("/create")
-    void addRate(@RequestBody @Valid OrderDto order) {
+    public void create(@RequestBody @Valid OrderDto order) {
         matchingService.createOrder(order);
-
     }
 }
