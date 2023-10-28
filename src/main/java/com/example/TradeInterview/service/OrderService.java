@@ -4,6 +4,7 @@ import com.example.TradeInterview.Exception.BalanceNotEnoughException;
 import com.example.TradeInterview.Exception.WalletNotFoundException;
 import com.example.TradeInterview.containt.OrderStatus;
 import com.example.TradeInterview.dto.OrderDto;
+import com.example.TradeInterview.dto.OrderRepDto;
 import com.example.TradeInterview.dto.PairDto;
 import com.example.TradeInterview.entity.Order;
 import com.example.TradeInterview.entity.Wallet;
@@ -31,8 +32,8 @@ import java.util.Map;
 
 @Service
 @PropertySource("classpath:application.properties")
-public class MatchingService {
-    private static final Logger logger = LoggerFactory.getLogger(MatchingService.class);
+public class OrderService {
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
     @Value("${currencies.info}")
     private String currenciesInfo;
     @Value("${default.wallet.balance}")
@@ -49,25 +50,41 @@ public class MatchingService {
     Map<String, MatchingEngine> matchingEngineMap = new HashMap<>();
     Map<String, PairDto> currenciesMap = new HashMap<>();
 
-    public MatchingService() {
+    /**
+     *
+     * @param pair
+     * @param limit
+     * @param page
+     * @return
+     */
+    public List<OrderRepDto> getOrdersByParams(String pair, Integer limit, Integer page) {
+        List<Order> entities = orderRepository.findAll();
+        return parseModel(entities);
     }
-    public void createOrder(OrderDto orderDto) {
+
+    /**
+     * 1. User able to buy/sell the supported crypto trading pairs
+     * @param orderDto
+     */
+    public Long createOrder(OrderDto orderDto) throws Exception {
         MatchingEngine engine = getMatchingEngines().get(orderDto.getPair());
         Order order = modelMapper.map(orderDto, Order.class);
         order.setRemain(order.getAmount());
+        createOrderAndUpdateWallet(order);
         engine.matchingOrder(order);
+        return order.getId();
     }
 
     @Transactional
-    private void createOrderAndUpdateWallet(Order order) {
+    private void createOrderAndUpdateWallet(Order order) throws Exception {
         String currency = getCurrency(order.getIsBid(), order.getPair());
         //todo add transaction lock by userId vs currency
         var walletOptional = walletRepository.findById(new WalletId(order.getUserId(), currency));
         if (!walletOptional.isPresent()) {
-            throw new WalletNotFoundException();
+            throw new WalletNotFoundException("user wallet not found");
         }
         Wallet wallet = walletOptional.get();
-        BigDecimal amount = BigDecimal.ZERO;
+        BigDecimal amount;
         if(order.getIsBid()) {
             amount = order.getAmount().multiply(order.getPrice()).setScale(8, RoundingMode.UP);
         } else {
@@ -116,5 +133,9 @@ public class MatchingService {
             }
         }
         return matchingEngineMap;
+    }
+
+    private List<OrderRepDto> parseModel(List<Order> entities) {
+        return entities.stream().map(entity -> modelMapper.map(entity, OrderRepDto.class)).toList();
     }
 }
