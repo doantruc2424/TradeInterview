@@ -2,60 +2,42 @@ package com.example.TradeInterview.entity;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "reference_price")
+@Table(name = "trade_reference_price")
 @IdClass(ReferencePriceId.class)
+@Getter
+@Setter
 public class ReferencePrice {
+    @Id
     private String source;
-    private BigDecimal price;
+    @Id
     private String pair;
+    private BigDecimal bidPrice;
+    private BigDecimal askPrice;
     private Long updatedAt;
 
-    public ReferencePrice(String source, BigDecimal price, String pair, Long updatedAt) {
+    public ReferencePrice(String source, String pair, BigDecimal bidPrice, BigDecimal askPrice, Long updatedAt) {
         this.source = source;
-        this.price = price;
         this.pair = pair;
+        this.bidPrice = bidPrice;
+        this.askPrice = askPrice;
         this.updatedAt = updatedAt;
+    }
+
+    public ReferencePrice(String source, String pair) {
+        this.source = source;
+        this.pair = pair;
     }
 
     public ReferencePrice() {
 
-    }
-
-    public String getSource() {
-        return source;
-    }
-
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getPair() {
-        return pair;
-    }
-
-    public void setPair(String pair) {
-        this.pair = pair;
-    }
-
-    public Long getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Long updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

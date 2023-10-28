@@ -2,16 +2,23 @@ package com.example.TradeInterview.entity;
 
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "trade")
+@Table(name = "trade_trade")
 @IdClass(TradeId.class)
+@Getter
+@Setter
 public class Trade {
+    @Id
     private Long userBid;
+    @Id
     private Long userAsk;
     private String pair;
     private Long userMaker;
@@ -30,62 +37,6 @@ public class Trade {
         this.userMaker = userMaker;
         this.price = price;
         this.amount = amount;
-        this.createdAt = createdAt;
-    }
-
-    public Long getUserBid() {
-        return userBid;
-    }
-
-    public void setUserBid(Long userBid) {
-        this.userBid = userBid;
-    }
-
-    public Long getUserAsk() {
-        return userAsk;
-    }
-
-    public void setUserAsk(Long userAsk) {
-        this.userAsk = userAsk;
-    }
-
-    public String getPair() {
-        return pair;
-    }
-
-    public void setPair(String pair) {
-        this.pair = pair;
-    }
-
-    public Long getUserMaker() {
-        return userMaker;
-    }
-
-    public void setUserMaker(Long userMaker) {
-        this.userMaker = userMaker;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public Long getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Long createdAt) {
         this.createdAt = createdAt;
     }
 }

@@ -1,10 +1,14 @@
 package com.example.TradeInterview.entity;
 
 import jakarta.persistence.Embeddable;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
 @Embeddable
+@Getter
+@Setter
 public class WalletId implements Serializable {
     private Long userId;
     private String currency;
@@ -15,22 +19,6 @@ public class WalletId implements Serializable {
 
     public WalletId(Long userId, String currency) {
         this.userId = userId;
-        this.currency = currency;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
         this.currency = currency;
     }
 }
