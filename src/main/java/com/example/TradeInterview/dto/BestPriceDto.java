@@ -1,10 +1,14 @@
 package com.example.TradeInterview.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class BestPriceDto {
@@ -14,17 +18,4 @@ public class BestPriceDto {
     private BigDecimal askPrice;
     private String askSource;
     private Long updatedAt;
-
-    public BestPriceDto(String symbol) {
-
-    }
-
-    public BestPriceDto(String symbol, BigDecimal bidPrice, String bidSource, BigDecimal askPrice, String askSource, Long updatedAt) {
-        this.symbol = symbol;
-        this.bidPrice = bidPrice;
-        this.bidSource = bidSource;
-        this.askPrice = askPrice;
-        this.askSource = askSource;
-        this.updatedAt = updatedAt;
-    }
 }

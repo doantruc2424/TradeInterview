@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 @IdClass(ReferencePriceId.class)
 @Getter
 @Setter
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

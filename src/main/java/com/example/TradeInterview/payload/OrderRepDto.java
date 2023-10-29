@@ -1,14 +1,15 @@
 package com.example.TradeInterview.payload;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class OrderRepDto {
@@ -20,14 +21,8 @@ public class OrderRepDto {
     private BigDecimal price;
     @Column(precision = 8)
     private BigDecimal amount;
-
     private String status;
-
     private BigDecimal remain;
     private Long createdAt;
     private Long updatedAt;
-
-    public OrderRepDto() {
-
-    }
 }

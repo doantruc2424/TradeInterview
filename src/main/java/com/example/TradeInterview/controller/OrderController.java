@@ -2,6 +2,7 @@ package com.example.TradeInterview.controller;
 
 import com.example.TradeInterview.Exception.BalanceNotEnoughException;
 import com.example.TradeInterview.Exception.WalletNotFoundException;
+import com.example.TradeInterview.dto.AggregationOrderDto;
 import com.example.TradeInterview.dto.BestPriceDto;
 import com.example.TradeInterview.dto.OrderDto;
 import com.example.TradeInterview.payload.OrderRepDto;
@@ -47,7 +48,7 @@ public class OrderController {
      * @throws BalanceNotEnoughException
      */
     @PostMapping("/aggregation_price/new")
-    public ResponseEntity<ApiResponse> aggregationPriceNew(@RequestBody @Validated OrderDto order) throws WalletNotFoundException, BalanceNotEnoughException {
+    public ResponseEntity<ApiResponse> aggregationPriceNew(@RequestBody @Validated AggregationOrderDto order) throws WalletNotFoundException, BalanceNotEnoughException {
         List<BestPriceDto> bestPriceDtos = externalPriceService.findBestPrice(order.getPair());
         if(bestPriceDtos.isEmpty()) {
             return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Error", "Can not found reference price for " + order.getPair(), ""));

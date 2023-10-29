@@ -1,13 +1,17 @@
 package com.example.TradeInterview.dto;
 
 import com.example.TradeInterview.entity.Order;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 
 import java.util.Queue;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 public class BucketDto {
@@ -15,14 +19,4 @@ public class BucketDto {
     Queue<Order> orders;
     BucketDto nextBucket;
     BucketDto prevBucket;
-
-    public BucketDto() {
-
-    }
-    public BucketDto(BigDecimal price, Queue<Order> orders, BucketDto nextBucket, BucketDto prevBucket) {
-        this.price = price;
-        this.orders = orders;
-        this.nextBucket = nextBucket;
-        this.prevBucket = prevBucket;
-    }
 }

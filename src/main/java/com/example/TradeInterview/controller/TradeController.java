@@ -24,10 +24,10 @@ public class TradeController {
      * @param page
      * @return
      */
-    @GetMapping("/get_trades")
-    public ResponseEntity<ApiResponse> getOrdersByParams(@RequestParam(required = false) String pair, @RequestParam(required = false, defaultValue = "100") Integer limit,
+    @GetMapping("/trades")
+    public ResponseEntity<ApiResponse> getOrdersByParams(@RequestParam(required = true) Long userId, @RequestParam(required = false) String pair, @RequestParam(required = false, defaultValue = "100") Integer limit,
                                                       @RequestParam(required = false,  defaultValue = "0") Integer page) {
-        List<TradeRepDto> dto = tradeService.getOrdersByParams(pair, limit, page);
+        List<TradeRepDto> dto = tradeService.getOrdersByParams(userId, pair, limit, page);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Ok", "success", dto));
     }
 }

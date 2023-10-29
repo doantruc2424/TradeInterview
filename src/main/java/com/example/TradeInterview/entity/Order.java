@@ -1,7 +1,9 @@
 package com.example.TradeInterview.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -10,6 +12,8 @@ import java.math.BigDecimal;
 @Table(name = "trade_order")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Order {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
@@ -21,23 +25,8 @@ public class Order {
     private BigDecimal price;
     @Column(precision = 32, scale = 6)
     private BigDecimal amount;
-
     private String status;
-
     private BigDecimal remain;
     private Long createdAt;
     private Long updatedAt;
-
-    public Order() {
-
-    }
-    public Order(Long userId, String pair, Boolean isBid, BigDecimal price, BigDecimal amount, Long createdAt, Long updatedAt) {
-        this.userId = userId;
-        this.pair = pair;
-        this.isBid = isBid;
-        this.price = price;
-        this.amount = amount;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
 }

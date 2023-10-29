@@ -4,6 +4,7 @@ import com.example.TradeInterview.Exception.BalanceNotEnoughException;
 import com.example.TradeInterview.Exception.WalletNotFoundException;
 import com.example.TradeInterview.config.LoadConfig;
 import com.example.TradeInterview.containt.OrderStatus;
+import com.example.TradeInterview.dto.AggregationOrderDto;
 import com.example.TradeInterview.dto.OrderDto;
 import com.example.TradeInterview.payload.OrderRepDto;
 import com.example.TradeInterview.dto.PairDto;
@@ -52,6 +53,11 @@ public class OrderService {
     public List<OrderRepDto> getOrdersByParams(String pair, Integer limit, Integer page) {
         List<Order> entities = orderRepository.findAll();
         return parseModel(entities);
+    }
+
+    public Long createOrder(AggregationOrderDto orderDto) throws WalletNotFoundException, BalanceNotEnoughException {
+        OrderDto order = modelMapper.map(orderDto, OrderDto.class);
+        return createOrder(order);
     }
 
     /**

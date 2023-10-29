@@ -1,7 +1,9 @@
 package com.example.TradeInterview.entity.id;
 
 import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -9,17 +11,9 @@ import java.io.Serializable;
 @Embeddable
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TradeId implements Serializable {
     private Long orderBid;
-
     private Long orderAsk;
-
-    public TradeId() {
-
-    }
-
-    public TradeId(Long orderBid, Long orderAsk) {
-        this.orderBid = orderBid;
-        this.orderAsk = orderAsk;
-    }
 }

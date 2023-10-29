@@ -2,7 +2,9 @@ package com.example.TradeInterview.entity;
 
 import com.example.TradeInterview.entity.id.WalletId;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Check;
 
@@ -13,6 +15,8 @@ import java.math.BigDecimal;
 @IdClass(WalletId.class)
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Wallet {
     @Id
     @Column(name = "user_id")
@@ -23,14 +27,4 @@ public class Wallet {
     @Check(constraints = "balance >= 0")
     @Column(name = "balance", precision = 8)
     private BigDecimal balance;
-
-    public Wallet() {
-
-    }
-
-    public Wallet(Long userId, String currency, BigDecimal balance) {
-        this.userId = userId;
-        this.currency = currency;
-        this.balance = balance;
-    }
 }

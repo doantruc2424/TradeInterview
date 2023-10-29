@@ -20,7 +20,13 @@ public class WalletController {
     @Autowired
     WalletService walletService;
 
-    @GetMapping("/get_wallets")
+    /**
+     * 3. User able to see the crypto currencies wallet balance
+     * @param currency
+     * @param userId
+     * @return
+     */
+    @GetMapping("/wallets")
     public ResponseEntity<ApiResponse> getWallets(@RequestParam(required = false) String currency, @RequestParam(required = true) Long userId) {
         List<WalletRepDto> dto = walletService.getWallets(currency, userId);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Ok", "success", dto));
