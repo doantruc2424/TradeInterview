@@ -11,7 +11,7 @@ import com.example.TradeInterview.repository.OrderRepository;
 import com.example.TradeInterview.repository.TradeRepository;
 import com.example.TradeInterview.repository.WalletRepository;
 import com.example.TradeInterview.config.LoadConfig;
-import com.example.TradeInterview.util.LockBusiness;
+import com.example.TradeInterview.util.WalletLock;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
@@ -48,28 +48,30 @@ public class MatchingEngine {
         }
     }
 
-    public synchronized void matchingOrder(Order newOrder) {
-        newOrder.setCreatedAt(System.currentTimeMillis());
-        newOrder.setUpdatedAt(System.currentTimeMillis());
-        newOrder.setStatus(OrderStatus.IN_PROCESS.name());
-        orderRepository.save(newOrder);
-        BigDecimal remain;
-        if (newOrder.getIsBid()) {
-            remain = tryMatchingBid(newOrder);
-        } else {
-            remain = tryMatchingAsk(newOrder);
-        }
-        if(remain.compareTo(BigDecimal.ZERO) == 0) {
-            newOrder.setRemain(remain);
-            newOrder.setStatus(OrderStatus.FILLED.name());
+    public void matchingOrder(Order newOrder) {
+        synchronized(this) {
+            newOrder.setCreatedAt(System.currentTimeMillis());
+            newOrder.setUpdatedAt(System.currentTimeMillis());
+            newOrder.setStatus(OrderStatus.IN_PROCESS.name());
             orderRepository.save(newOrder);
-            return;
-        } if (remain.compareTo(newOrder.getRemain()) < 0) {
-            newOrder.setRemain(remain);
-            newOrder.setStatus(OrderStatus.PARTIALLY_FILLED.name());
-            orderRepository.save(newOrder);
+            BigDecimal remain;
+            if (newOrder.getIsBid()) {
+                remain = tryMatchingBid(newOrder);
+            } else {
+                remain = tryMatchingAsk(newOrder);
+            }
+            if(remain.compareTo(BigDecimal.ZERO) == 0) {
+                newOrder.setRemain(remain);
+                newOrder.setStatus(OrderStatus.FILLED.name());
+                orderRepository.save(newOrder);
+                return;
+            } if (remain.compareTo(newOrder.getRemain()) < 0) {
+                newOrder.setRemain(remain);
+                newOrder.setStatus(OrderStatus.PARTIALLY_FILLED.name());
+                orderRepository.save(newOrder);
+            }
+            addOrderToBucket(newOrder);
         }
-        addOrderToBucket(newOrder);
     }
 
     private void addOrderToBucket(Order newOrder) {
@@ -143,7 +145,7 @@ public class MatchingEngine {
 
     private void addBalance(Long user, String currency, BigDecimal amount) {
         String businessId = user + currency;
-        LockBusiness lock = LockBusiness.getLockObjectForBusinessId(businessId);
+        WalletLock lock = WalletLock.getLockObjectForBusinessId(businessId);
         synchronized (lock) {
             var walletOptional = walletRepository.findById(new WalletId(user, currency));
             if (walletOptional.isPresent()) {
@@ -151,7 +153,7 @@ public class MatchingEngine {
                 wallet.setBalance(wallet.getBalance().add(amount));
                 walletRepository.save(wallet);
             }
-            LockBusiness.releaseLockForBusinessId(businessId);
+            WalletLock.releaseLockForBusinessId(businessId);
         }
     }
 

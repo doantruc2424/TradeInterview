@@ -16,7 +16,7 @@ import com.example.TradeInterview.matchingCore.MatchingEngine;
 import com.example.TradeInterview.repository.OrderRepository;
 import com.example.TradeInterview.repository.TradeRepository;
 import com.example.TradeInterview.repository.WalletRepository;
-import com.example.TradeInterview.util.LockBusiness;
+import com.example.TradeInterview.util.WalletLock;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +86,7 @@ public class OrderService {
     private void updateWalletBalance(Order order) throws WalletNotFoundException, BalanceNotEnoughException {
         String currency = getCurrency(order.getIsBid(), order.getPair());
         String businessId = order.getUserId() + currency;
-        LockBusiness lock = LockBusiness.getLockObjectForBusinessId(businessId);
+        WalletLock lock = WalletLock.getLockObjectForBusinessId(businessId);
         synchronized (lock) {
             var walletOptional = walletRepository.findById(new WalletId(order.getUserId(), currency));
             if (!walletOptional.isPresent()) {
@@ -105,7 +105,7 @@ public class OrderService {
             }
             wallet.setBalance(wallet.getBalance().subtract(amount));
             walletRepository.save(wallet);
-            LockBusiness.releaseLockForBusinessId(businessId);
+            WalletLock.releaseLockForBusinessId(businessId);
         }
     }
 
