@@ -1,6 +1,7 @@
 package com.example.TradeInterview.service;
 
 import com.example.TradeInterview.Exception.BalanceNotEnoughException;
+import com.example.TradeInterview.Exception.SymbolNotSupportException;
 import com.example.TradeInterview.Exception.WalletNotFoundException;
 import com.example.TradeInterview.config.LoadConfig;
 import com.example.TradeInterview.containt.OrderStatus;
@@ -66,6 +67,9 @@ public class OrderService {
      */
     public Long createOrder(OrderDto orderDto) throws WalletNotFoundException, BalanceNotEnoughException {
         MatchingEngine engine = getMatchingEngines().get(orderDto.getPair());
+        if (engine == null) {
+            throw new SymbolNotSupportException("Coin pair not support");
+        }
         Order order = modelMapper.map(orderDto, Order.class);
         order.setRemain(order.getAmount());
         createOrderAndUpdateWallet(order);

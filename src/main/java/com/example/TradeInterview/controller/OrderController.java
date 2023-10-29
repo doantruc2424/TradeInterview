@@ -9,6 +9,8 @@ import com.example.TradeInterview.payload.OrderRepDto;
 import com.example.TradeInterview.payload.ApiResponse;
 import com.example.TradeInterview.service.ExternalPriceService;
 import com.example.TradeInterview.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,8 @@ import java.util.List;
 @RestController
 @RequestMapping(path = "/api/v1/order")
 public class OrderController {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Autowired
     OrderService orderService;
