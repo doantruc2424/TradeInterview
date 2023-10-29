@@ -1,8 +1,10 @@
 package com.example.TradeInterview.entity;
 
+import com.example.TradeInterview.entity.id.WalletId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Check;
 
 import java.math.BigDecimal;
 
@@ -18,6 +20,7 @@ public class Wallet {
     @Id
     @Column(name = "currency", length = 10)
     private String currency;
+    @Check(constraints = "balance >= 0")
     @Column(name = "balance", precision = 8)
     private BigDecimal balance;
 

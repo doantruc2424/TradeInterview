@@ -1,7 +1,7 @@
 package com.example.TradeInterview.controller;
 
 import com.example.TradeInterview.dto.BestPriceDto;
-import com.example.TradeInterview.response.ApiResponse;
+import com.example.TradeInterview.payload.ApiResponse;
 import com.example.TradeInterview.service.ExternalPriceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

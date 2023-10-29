@@ -1,9 +1,7 @@
 package com.example.TradeInterview.controller;
 
-import com.example.TradeInterview.dto.TradeRepDto;
-import com.example.TradeInterview.dto.WalletRepDto;
-import com.example.TradeInterview.response.ApiResponse;
-import com.example.TradeInterview.service.TradeService;
+import com.example.TradeInterview.payload.WalletRepDto;
+import com.example.TradeInterview.payload.ApiResponse;
 import com.example.TradeInterview.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,10 +21,8 @@ public class WalletController {
     WalletService walletService;
 
     @GetMapping("/get_wallets")
-    public ResponseEntity<ApiResponse> getWallets(@RequestParam(required = false) String currency) {
-        List<WalletRepDto> dto = walletService.getWallets(currency);
+    public ResponseEntity<ApiResponse> getWallets(@RequestParam(required = false) String currency, @RequestParam(required = true) Long userId) {
+        List<WalletRepDto> dto = walletService.getWallets(currency, userId);
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponse("Ok", "success", dto));
     }
-
-
 }

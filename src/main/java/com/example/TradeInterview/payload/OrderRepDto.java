@@ -1,4 +1,4 @@
-package com.example.TradeInterview.dto;
+package com.example.TradeInterview.payload;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;

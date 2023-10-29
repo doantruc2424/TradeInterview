@@ -1,10 +1,8 @@
 package com.example.TradeInterview.entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
+import com.example.TradeInterview.entity.id.TradeId;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,7 +21,9 @@ public class Trade {
     private Long userBid;
     private Long userAsk;
     private String pair;
+    @Column(precision = 32, scale = 6)
     private BigDecimal price;
+    @Column(precision = 32, scale = 6)
     private BigDecimal amount;
     private Long createdAt;
 

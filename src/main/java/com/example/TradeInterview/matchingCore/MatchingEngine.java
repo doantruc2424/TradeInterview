@@ -2,13 +2,20 @@ package com.example.TradeInterview.matchingCore;
 
 import com.example.TradeInterview.containt.OrderStatus;
 import com.example.TradeInterview.dto.BucketDto;
+import com.example.TradeInterview.dto.PairDto;
 import com.example.TradeInterview.entity.Order;
 import com.example.TradeInterview.entity.Trade;
+import com.example.TradeInterview.entity.Wallet;
+import com.example.TradeInterview.entity.id.WalletId;
 import com.example.TradeInterview.repository.OrderRepository;
 import com.example.TradeInterview.repository.TradeRepository;
+import com.example.TradeInterview.repository.WalletRepository;
+import com.example.TradeInterview.config.LoadConfig;
+import com.example.TradeInterview.util.LockBusiness;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -21,10 +28,16 @@ public class MatchingEngine {
     TradeRepository tradeRepository;
     @Autowired
     OrderRepository orderRepository;
+    @Autowired
+    WalletRepository walletRepository;
+    @Autowired
+    LoadConfig loadConfig;
 
-    public MatchingEngine(TradeRepository tradeRepository, OrderRepository orderRepository, String pair) {
+    public MatchingEngine(TradeRepository tradeRepository, OrderRepository orderRepository, WalletRepository walletRepository, LoadConfig loadConfig, String pair) {
         this.tradeRepository = tradeRepository;
         this.orderRepository = orderRepository;
+        this.walletRepository = walletRepository;
+        this.loadConfig = loadConfig;
         loadData(pair);
     }
 
@@ -109,12 +122,45 @@ public class MatchingEngine {
         }
     }
 
+
+
+    private void saveTrade(Order newOrder, Order makerOrder, BigDecimal amount) {
+        Trade trade = new Trade(
+                newOrder.getIsBid() ? newOrder.getId() : makerOrder.getId(),
+                newOrder.getIsBid() ? makerOrder.getId() : newOrder.getId(),
+                newOrder.getIsBid() ? newOrder.getUserId() : makerOrder.getUserId(),
+                newOrder.getIsBid() ? makerOrder.getUserId() : newOrder.getUserId(),
+                makerOrder.getPair(), makerOrder.getPrice(), amount, newOrder.getCreatedAt());
+        tradeRepository.save(trade);
+        addBalance(trade);
+    }
+
+    private void addBalance(Trade trade) {
+        PairDto pair = loadConfig.getCurrenciesMap().get(trade.getPair());
+        addBalance(trade.getUserAsk(), pair.getQuote(), trade.getAmount().multiply(trade.getPrice()).setScale(8, RoundingMode.DOWN));
+        addBalance(trade.getUserBid(), pair.getBase(), trade.getAmount());
+    }
+
+    private void addBalance(Long user, String currency, BigDecimal amount) {
+        String businessId = user + currency;
+        LockBusiness lock = LockBusiness.getLockObjectForBusinessId(businessId);
+        synchronized (lock) {
+            var walletOptional = walletRepository.findById(new WalletId(user, currency));
+            if (walletOptional.isPresent()) {
+                Wallet wallet = walletOptional.get();
+                wallet.setBalance(wallet.getBalance().add(amount));
+                walletRepository.save(wallet);
+            }
+            LockBusiness.releaseLockForBusinessId(businessId);
+        }
+    }
+
     private BigDecimal tryMatchingBid(Order newOrder) {
         BigDecimal remain = newOrder.getRemain();
         if (askBestPrice == null) {
             return remain;
         }
-        while (askBestPrice.getPrice().compareTo(newOrder.getPrice()) <= 0 || remain.compareTo(BigDecimal.ZERO) > 0) {
+        while (askBestPrice.getPrice().compareTo(newOrder.getPrice()) <= 0 && remain.compareTo(BigDecimal.ZERO) > 0) {
             Order order = askBestPrice.getOrders().peek();
             if (order == null) {
                 askBestPrice = askBestPrice.getPrevBucket();
@@ -139,21 +185,12 @@ public class MatchingEngine {
         return remain;
     }
 
-    private void saveTrade(Order newOrder, Order makerOrder, BigDecimal amount) {
-        tradeRepository.save(new Trade(
-                newOrder.getIsBid() ? newOrder.getId() : makerOrder.getId(),
-                newOrder.getIsBid() ? makerOrder.getId() : newOrder.getId(),
-                newOrder.getIsBid() ? newOrder.getUserId() : makerOrder.getUserId(),
-                newOrder.getIsBid() ? makerOrder.getUserId() : newOrder.getUserId(),
-                makerOrder.getPair(), makerOrder.getPrice(), amount, newOrder.getCreatedAt()));
-    }
-
     private BigDecimal tryMatchingAsk(Order newOrder) {
         BigDecimal remain = newOrder.getRemain();
         if (bidBestPrice == null) {
             return remain;
         }
-        while (bidBestPrice.getPrice().compareTo(newOrder.getPrice()) >= 0 || remain.compareTo(BigDecimal.ZERO) > 0) {
+        while (bidBestPrice.getPrice().compareTo(newOrder.getPrice()) >= 0 && remain.compareTo(BigDecimal.ZERO) > 0) {
             Order order = bidBestPrice.getOrders().peek();
             if (order == null) {
                 bidBestPrice = bidBestPrice.getPrevBucket();

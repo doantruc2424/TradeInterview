@@ -1,4 +1,4 @@
-package com.example.TradeInterview.dto;
+package com.example.TradeInterview.payload;
 
 import lombok.Getter;
 import lombok.Setter;

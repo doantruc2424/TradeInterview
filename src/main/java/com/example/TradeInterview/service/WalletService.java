@@ -1,6 +1,6 @@
 package com.example.TradeInterview.service;
 
-import com.example.TradeInterview.dto.WalletRepDto;
+import com.example.TradeInterview.payload.WalletRepDto;
 import com.example.TradeInterview.entity.Wallet;
 import com.example.TradeInterview.repository.WalletRepository;
 import org.modelmapper.ModelMapper;
@@ -24,8 +24,8 @@ public class WalletService {
      *3. User able to see the crypto currencies wallet balance
      * @return
      */
-    public List<WalletRepDto> getWallets(String currency) {
-        List<Wallet> entities = walletRepository.findAll();
+    public List<WalletRepDto> getWallets(String currency, Long userId) {
+        List<Wallet> entities = walletRepository.findByUserId(userId);
         return parseModel(entities);
     }
     private List<WalletRepDto> parseModel(List<Wallet> entities) {

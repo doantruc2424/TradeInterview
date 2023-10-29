@@ -1,8 +1,8 @@
 package com.example.TradeInterview.cronjob;
 
-import com.example.TradeInterview.service.ExternalBinancePrice;
-import com.example.TradeInterview.service.ExternalHuobiPrice;
-import com.example.TradeInterview.service.ExternalMarketPrice;
+import com.example.TradeInterview.cronjob.externalSource.ExternalBinancePrice;
+import com.example.TradeInterview.cronjob.externalSource.ExternalHuobiPrice;
+import com.example.TradeInterview.cronjob.externalSource.ExternalMarketPrice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

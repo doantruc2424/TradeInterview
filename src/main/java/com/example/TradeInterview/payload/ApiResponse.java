@@ -1,4 +1,4 @@
-package com.example.TradeInterview.response;
+package com.example.TradeInterview.payload;
 
 public class ApiResponse {
 

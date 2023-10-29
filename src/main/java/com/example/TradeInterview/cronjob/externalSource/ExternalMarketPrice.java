@@ -1,4 +1,4 @@
-package com.example.TradeInterview.service;
+package com.example.TradeInterview.cronjob.externalSource;
 
 import java.util.HashSet;
 

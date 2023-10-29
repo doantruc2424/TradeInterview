@@ -1,8 +1,9 @@
-package com.example.TradeInterview.service;
+package com.example.TradeInterview.cronjob.externalSource;
 
-import com.example.TradeInterview.dto.BinanceStickerDto;
+import com.example.TradeInterview.dto.HuobiReturnDataDto;
+import com.example.TradeInterview.dto.HuobiStickerDto;
 import com.example.TradeInterview.entity.ReferencePrice;
-import com.example.TradeInterview.entity.ReferencePriceId;
+import com.example.TradeInterview.entity.id.ReferencePriceId;
 import com.example.TradeInterview.repository.ReferencePriceRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
@@ -17,20 +18,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * 1. Price aggregation from the source below:
- * Binance
- * Url : https://api.binance.com/api/v3/ticker/bookTicker
+ * Houbi
+ * Url : https://api.huobi.pro/market/tickers
  */
 @Service
-public class ExternalBinancePrice implements ExternalMarketPrice {
-    private static final Logger logger = LoggerFactory.getLogger(ExternalBinancePrice.class);
+public class ExternalHuobiPrice implements ExternalMarketPrice {
+    private static final Logger logger = LoggerFactory.getLogger(ExternalHuobiPrice.class);
 
     @Autowired
     ReferencePriceRepository referencePriceRepository;
@@ -38,14 +41,16 @@ public class ExternalBinancePrice implements ExternalMarketPrice {
     @Override
     public void updateExternalPrice(String source, String url, HashSet<String> pairs, Long updateTime) {
         logger.info("start check price" + Thread.currentThread().getName());
-
         try {
             String result = makeAPICall(url);
             ObjectMapper mapper = new ObjectMapper();
-            List<BinanceStickerDto> stickers = Arrays.asList(mapper.readValue(result, BinanceStickerDto[].class));
-            for (BinanceStickerDto sticker : stickers) {
+            HuobiReturnDataDto HuobiData = mapper.readValue(result, HuobiReturnDataDto.class);
+
+            List<HuobiStickerDto> stickers = HuobiData.getData();
+            for (HuobiStickerDto sticker : stickers) {
                 String symbol = sticker.getSymbol();
                 if (pairs.contains(symbol)) {
+                    symbol = symbol.toUpperCase();
                     ReferencePrice referencePrice;
                     var referencePriceOptional = referencePriceRepository.findById(new ReferencePriceId(source, symbol));
                     if (referencePriceOptional.isPresent()) {
@@ -54,9 +59,11 @@ public class ExternalBinancePrice implements ExternalMarketPrice {
                         referencePrice = new ReferencePrice(source, symbol);
 
                     }
-                    referencePrice.setBidPrice(new BigDecimal(sticker.getBidPrice()));
-                    referencePrice.setAskPrice(new BigDecimal(sticker.getAskPrice()));
+                    referencePrice.setBidPrice(new BigDecimal(sticker.getBid()));
+                    referencePrice.setAskPrice(new BigDecimal(sticker.getAsk()));
                     referencePrice.setUpdatedAt(updateTime);
+                    logger.info("updateExternalPrice Huobi source :" + referencePrice.toString());
+
                     referencePriceRepository.save(referencePrice);
                     pairs.remove(symbol);
                     if (pairs.isEmpty()) {

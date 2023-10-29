@@ -17,9 +17,9 @@ public class Order {
     private Long userId;
     private String pair;
     private Boolean isBid;
-    @Column(precision = 8)
+    @Column(precision = 32, scale = 6)
     private BigDecimal price;
-    @Column(precision = 8)
+    @Column(precision = 32, scale = 6)
     private BigDecimal amount;
 
     private String status;

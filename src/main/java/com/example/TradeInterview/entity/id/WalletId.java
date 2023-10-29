@@ -1,4 +1,4 @@
-package com.example.TradeInterview.entity;
+package com.example.TradeInterview.entity.id;
 
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
