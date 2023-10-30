@@ -212,15 +212,20 @@ public class MatchingEngine {
             }
             if (order.getRemain().compareTo(remain) == 0) {
                 saveTrade(newOrder, order, remain);
+                order.setRemain(BigDecimal.ZERO);
+                orderRepository.save(order);
                 remain = BigDecimal.ZERO;
-                bidBestPrice.getOrders().remove(order);
+                askBestPrice.getOrders().remove(order);
             } else if (order.getRemain().compareTo(remain) < 0) {
                 saveTrade(newOrder, order, order.getRemain());
+                order.setRemain(order.getRemain().subtract(remain));
                 remain = remain.subtract(order.getRemain());
-                bidBestPrice.getOrders().remove(order);
+                orderRepository.save(order);
+                askBestPrice.getOrders().remove(order);
             } else {
                 saveTrade(newOrder, order, remain);
                 order.setRemain(order.getRemain().subtract(remain));
+                orderRepository.save(order);
                 remain = BigDecimal.ZERO;
             }
         }
