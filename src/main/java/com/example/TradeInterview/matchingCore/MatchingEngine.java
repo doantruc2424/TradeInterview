@@ -77,7 +77,7 @@ public class MatchingEngine {
     private void addOrderToBucket(Order newOrder) {
         BucketDto prevBucket;
         BucketDto nextBucket = null;
-        if(newOrder.getIsBid()) {
+        if (newOrder.getIsBid()) {
             if (bidBestPrice == null) {
                 Queue<Order> orders = new LinkedList<>();
                 orders.add(newOrder);
@@ -97,19 +97,19 @@ public class MatchingEngine {
                 return;
             }
             prevBucket = askBestPrice;
-            while (newOrder.getPrice().compareTo(prevBucket.getPrice()) > 0) {
+            while (prevBucket!= null && newOrder.getPrice().compareTo(prevBucket.getPrice()) > 0) {
                 nextBucket = prevBucket;
                 prevBucket = prevBucket.getPrevBucket();
             }
         }
         BucketDto existedBucket = null;
-        if(nextBucket != null && newOrder.getPrice().compareTo(nextBucket.getPrice()) == 0) {
+        if (nextBucket != null && newOrder.getPrice().compareTo(nextBucket.getPrice()) == 0) {
             existedBucket = nextBucket;
         }
-        if(prevBucket != null && newOrder.getPrice().compareTo(prevBucket.getPrice()) == 0) {
+        if (prevBucket != null && newOrder.getPrice().compareTo(prevBucket.getPrice()) == 0) {
             existedBucket = prevBucket;
         }
-        if(existedBucket == null) {
+        if (existedBucket == null) {
             Queue<Order> orders = new LinkedList<>();
             orders.add(newOrder);
             BucketDto newBucket = new BucketDto(newOrder.getPrice(), orders, nextBucket, prevBucket);
@@ -119,12 +119,17 @@ public class MatchingEngine {
             if (prevBucket != null) {
                 prevBucket.setNextBucket(newBucket);
             }
+            if (newBucket.getNextBucket() == null) {
+                if (newOrder.getIsBid()) {
+                    bidBestPrice = newBucket;
+                } else {
+                    askBestPrice = newBucket;
+                }
+            }
         } else {
             existedBucket.getOrders().add(newOrder);
         }
     }
-
-
 
     private void saveTrade(Order newOrder, Order makerOrder, BigDecimal amount) {
         Trade trade = new Trade(
@@ -172,15 +177,20 @@ public class MatchingEngine {
             }
             if (order.getRemain().compareTo(remain) == 0) {
                 saveTrade(newOrder, order, remain);
+                order.setRemain(BigDecimal.ZERO);
+                orderRepository.save(order);
                 remain = BigDecimal.ZERO;
                 askBestPrice.getOrders().remove(order);
             } else if (order.getRemain().compareTo(remain) < 0) {
                 saveTrade(newOrder, order, order.getRemain());
+                order.setRemain(order.getRemain().subtract(remain));
                 remain = remain.subtract(order.getRemain());
+                orderRepository.save(order);
                 askBestPrice.getOrders().remove(order);
             } else {
                 saveTrade(newOrder, order, remain);
                 order.setRemain(order.getRemain().subtract(remain));
+                orderRepository.save(order);
                 remain = BigDecimal.ZERO;
             }
         }
