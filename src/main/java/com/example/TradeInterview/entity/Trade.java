@@ -1,6 +1,7 @@
 package com.example.TradeInterview.entity;
 
 
+import com.example.TradeInterview.containt.CoinPair;
 import com.example.TradeInterview.entity.id.TradeId;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,7 +25,7 @@ public class Trade {
     private Long orderAsk;
     private Long userBid;
     private Long userAsk;
-    private String pair;
+    private CoinPair pair;
     @Column(precision = 32, scale = 6)
     private BigDecimal price;
     @Column(precision = 32, scale = 6)

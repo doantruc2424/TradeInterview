@@ -1,5 +1,7 @@
 package com.example.TradeInterview.entity;
 
+import com.example.TradeInterview.containt.CoinPair;
+import com.example.TradeInterview.containt.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,13 +21,13 @@ public class Order {
     @Id
     private Long id;
     private Long userId;
-    private String pair;
+    private CoinPair pair;
     private Boolean isBid;
     @Column(precision = 32, scale = 6)
     private BigDecimal price;
     @Column(precision = 32, scale = 6)
     private BigDecimal amount;
-    private String status;
+    private OrderStatus status;
     private BigDecimal remain;
     private Long createdAt;
     private Long updatedAt;

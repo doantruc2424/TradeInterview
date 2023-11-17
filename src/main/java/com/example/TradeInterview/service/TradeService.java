@@ -35,7 +35,7 @@ public class TradeService {
         for(Trade trade : entities) {
             result.add(new TradeRepDto(
                     trade.getUserBid().compareTo(userId) == 0 ? trade.getOrderBid() : trade.getOrderAsk(),
-                    trade.getPair(),
+                    trade.getPair().name(),
                     trade.getPrice(),
                     trade.getAmount(),
                     trade.getUserBid().compareTo(userId) == 0 ? Boolean.TRUE : Boolean.FALSE,

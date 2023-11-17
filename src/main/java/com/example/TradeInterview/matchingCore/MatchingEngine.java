@@ -52,7 +52,7 @@ public class MatchingEngine {
         synchronized(this) {
             newOrder.setCreatedAt(System.currentTimeMillis());
             newOrder.setUpdatedAt(System.currentTimeMillis());
-            newOrder.setStatus(OrderStatus.IN_PROCESS.name());
+            newOrder.setStatus(OrderStatus.IN_PROCESS);
             orderRepository.save(newOrder);
             BigDecimal remain;
             if (newOrder.getIsBid()) {
@@ -62,12 +62,13 @@ public class MatchingEngine {
             }
             if(remain.compareTo(BigDecimal.ZERO) == 0) {
                 newOrder.setRemain(remain);
-                newOrder.setStatus(OrderStatus.FILLED.name());
+                newOrder.setStatus(OrderStatus.FILLED);
                 orderRepository.save(newOrder);
                 return;
             } if (remain.compareTo(newOrder.getRemain()) < 0) {
                 newOrder.setRemain(remain);
-                newOrder.setStatus(OrderStatus.PARTIALLY_FILLED.name());
+           if (newOrder.getAmount().compareTo(newOrder.getRemain()) != 0)
+                newOrder.setStatus(OrderStatus.PARTIALLY_FILLED);
                 orderRepository.save(newOrder);
             }
             addOrderToBucket(newOrder);

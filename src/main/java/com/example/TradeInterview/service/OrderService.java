@@ -79,12 +79,12 @@ public class OrderService {
 
     private void createOrderAndUpdateWallet(Order order) throws WalletNotFoundException, BalanceNotEnoughException {
         updateWalletBalance(order);
-        order.setStatus(OrderStatus.NEW.name());
+        order.setStatus(OrderStatus.NEW);
         orderRepository.save(order);
     }
 
     private void updateWalletBalance(Order order) throws WalletNotFoundException, BalanceNotEnoughException {
-        String currency = getCurrency(order.getIsBid(), order.getPair());
+        String currency = getCurrency(order.getIsBid(), order.getPair().name());
         String businessId = order.getUserId() + currency;
         WalletLock lock = WalletLock.getLockObjectForBusinessId(businessId);
         synchronized (lock) {
